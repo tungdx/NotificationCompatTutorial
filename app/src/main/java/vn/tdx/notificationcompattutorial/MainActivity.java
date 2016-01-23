@@ -1,6 +1,7 @@
 package vn.tdx.notificationcompattutorial;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.normal:
-                showNormalNotification();
+                showNormalNotification(this);
                 break;
             case R.id.action:
                 showNotificationWithAction();
@@ -38,13 +39,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void showNormalNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    private void showNormalNotification(Context context) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle("Title");
         builder.setContentText("Description");
         builder.setSmallIcon(R.mipmap.ic_launcher);
 
-        NotificationManagerCompat.from(this).notify(NORMAL_ID, builder.build());
+        NotificationManagerCompat.from(context).notify(NORMAL_ID, builder.build());
     }
 
     private void showNotificationWithAction() {
@@ -55,10 +56,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setSmallIcon(R.mipmap.ic_launcher);
 
         //add action
-        Intent notificationIntent = new Intent(this, ActionActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        NotificationCompat.Action action = new NotificationCompat.Action(R.mipmap.ic_launcher, "Open Action", pendingIntent);
+        Intent buttonActionIntent = new Intent(this, ActionActivity.class);
+        PendingIntent pendingIntentButton = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), buttonActionIntent, 0);
+        NotificationCompat.Action action = new NotificationCompat.Action(R.mipmap.ic_launcher, "Open Action", pendingIntentButton);
         builder.addAction(action);
+
+        Intent notificationIntent = new Intent(this, SettingActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        builder.setContentIntent(pendingIntent);
 
         //show notification
         NotificationManagerCompat.from(this).notify(ACTION_ID, builder.build());
